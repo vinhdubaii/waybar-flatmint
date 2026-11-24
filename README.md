@@ -15,7 +15,7 @@ The installer:
 1. installs required packages with `pacman` (AUR ones via `paru`/`yay` if present)
 2. backs up and replaces `~/.config/waybar`
 3. backs up `~/.config/sway/config` (or creates it from `/etc/sway/config`), switches the bar to waybar
-   and adds a small marked block (`# >>> waybar-flatmint >>>`) — floating terminal rule, mako, cliphist, env import
+   points the launcher (`$menu`, `Mod+D`) at rofi, and adds a small marked block (`# >>> waybar-flatmint >>>`) — floating terminal rule, mako, cliphist, env import
 4. installs the `wlsunset` user unit and reloads sway if you run it inside a sway session
 
 Re-running is safe: backups get a timestamp and the sway block is not added twice.

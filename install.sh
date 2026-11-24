@@ -130,6 +130,19 @@ patch_sway() {
         fi
     fi
 
+    # launcher: point $menu at rofi (sway's default wmenu is not installed by this script).
+    # Must edit the existing line in place: a later `set` would not affect an earlier bindsym.
+    local rofi_cmd='rofi -show combi -combi-modes drun,run -show-icons'
+    local menu_bind=0
+    if grep -Eq '^[[:space:]]*set[[:space:]]+\$menu[[:space:]]' "$conf"; then
+        if ! grep -E '^[[:space:]]*set[[:space:]]+\$menu[[:space:]]' "$conf" | grep -q 'rofi'; then
+            sed -i -E "s|^([[:space:]]*)set[[:space:]]+\\\$menu[[:space:]].*|\1set \$menu $rofi_cmd # waybar-flatmint|" "$conf"
+            say "Launcher (\$menu) set to rofi."
+        fi
+    elif ! grep -Eq '^[[:space:]]*bindsym[[:space:]]+\$mod\+d[[:space:]]' "$conf"; then
+        menu_bind=1
+    fi
+
     if grep -q '>>> waybar-flatmint >>>' "$conf"; then
         say "Sway config already has the waybar-flatmint block, leaving it."
         return 0
@@ -137,6 +150,7 @@ patch_sway() {
     {
         printf '\n# >>> waybar-flatmint >>>\n'
         printf 'for_window [app_id="floating_shell"] floating enable\n'
+        [ "$menu_bind" -eq 1 ] && printf 'bindsym $mod+d exec %s\n' "$rofi_cmd"
         grep -Eq '^[[:space:]]*exec(_always)?[[:space:]].*mako' "$conf" || printf 'exec mako\n'
         grep -Eq 'cliphist' "$conf" || printf 'exec wl-paste --watch cliphist store\n'
         grep -Eq 'import-environment' "$conf" || printf 'exec systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP\n'
