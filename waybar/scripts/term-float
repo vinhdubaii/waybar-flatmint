@@ -1,0 +1,8 @@
+#!/bin/sh
+# Open a command in a small floating terminal. Needs in sway config:
+#   for_window [app_id="floating_shell"] floating enable
+ID=floating_shell
+if   command -v foot >/dev/null 2>&1;      then exec foot --app-id "$ID" --window-size-chars 82x25 "$@"
+elif command -v kitty >/dev/null 2>&1;     then exec kitty --class "$ID" "$@"
+elif command -v alacritty >/dev/null 2>&1; then exec alacritty --class "$ID" -e "$@"
+else echo "no supported terminal (foot/kitty/alacritty)" >&2; exit 1; fi
